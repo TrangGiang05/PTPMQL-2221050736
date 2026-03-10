@@ -1,0 +1,27 @@
+@model FirstWebMVC.Models.Entities.Student
+
+@{
+    ViewData["Title"] = "Xóa Sinh viên";
+}
+
+<h2>Xóa dữ liệu Sinh viên</h2>
+
+<h4 class="text-danger">Bạn có chắc chắn muốn xóa sinh viên này không? Hành động này không thể hoàn tác.</h4>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Mã Sinh Viên</dt>
+        <dd class="col-sm-9">@Model.StudentCode</dd>
+        
+        <dt class="col-sm-3">Họ và Tên</dt>
+        <dd class="col-sm-9">@Model.FullName</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="StudentCode" />
+        
+        <input type="submit" value="Xác nhận Xóa" class="btn btn-danger" /> 
+        
+        <a asp-action="Index" class="btn btn-secondary ms-2">Hủy / Quay lại</a>
+    </form>
+</div>

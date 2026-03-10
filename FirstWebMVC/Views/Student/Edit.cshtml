@@ -1,20 +1,20 @@
 @model FirstWebMVC.Models.Entities.Student
 
 @{
-    ViewData["Title"] = "Thêm mới Sinh viên";
+    ViewData["Title"] = "Chỉnh sửa Sinh viên";
 }
 
-<h2>Thêm mới dữ liệu Sinh viên</h2>
+<h2>Chỉnh sửa thông tin Sinh viên</h2>
 <hr />
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" method="post">
+        <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
             <div class="form-group mb-3">
                 <label asp-for="StudentCode" class="control-label">Mã Sinh Viên</label>
-                <input asp-for="StudentCode" class="form-control" />
+                <input asp-for="StudentCode" class="form-control" readonly />
             </div>
             
             <div class="form-group mb-3">
@@ -23,8 +23,8 @@
             </div>
             
             <div class="form-group mt-3">
-                <input type="submit" value="Lưu dữ liệu" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary ms-2">Hủy / Quay lại danh sách</a>
+                <input type="submit" value="Lưu thay đổi" class="btn btn-warning" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Hủy / Quay lại</a>
             </div>
         </form>
     </div>
