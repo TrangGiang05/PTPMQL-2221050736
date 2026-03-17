@@ -4,28 +4,33 @@
     ViewData["Title"] = "Danh sách Sinh viên";
 }
 
-<h2>Danh sách Sinh viên</h2>
+<div class="mt-4 mb-4">
+    <h2>Danh sách Sinh viên</h2>
+    <a asp-action="Create" class="btn btn-primary mt-2">Thêm mới Sinh viên</a>
+</div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Thêm mới Sinh viên</a>
-</p>
-
-<table class="table table-bordered">
-    <thead>
+<table class="table table-bordered table-hover">
+    <thead class="table-primary">
         <tr>
-            <th>Mã Sinh Viên</th>
+            <th>Mã Sinh Số Viên</th>
             <th>Họ và Tên</th>
-            <th>Thao tác</th>
+            <th>Tuổi</th>
+            <th>Email</th>
+            <th class="text-center">Thao tác</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
             <tr>
-                <td>@item.StudentCode</td>
-                <td>@item.FullName</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.StudentCode">Sửa</a> |
-                    <a asp-action="Delete" asp-route-id="@item.StudentCode" class="text-danger">Xóa</a>                </td>
+                <td class="align-middle">@item.StudentCode</td>
+                <td class="align-middle">@item.FullName</td>
+                <td class="align-middle">@item.Age</td>
+                <td class="align-middle">@item.Email</td>
+                <td class="text-center align-middle">
+                    <a asp-action="Edit" asp-route-id="@item.StudentCode" class="btn btn-sm btn-outline-primary me-1">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.StudentCode" class="btn btn-sm btn-outline-danger">Xóa</a>
+                </td>
             </tr>
         }
     </tbody>

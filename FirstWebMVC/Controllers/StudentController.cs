@@ -48,7 +48,7 @@ namespace FirstWebMVC.Controllers
         {
             if (id == null)
             {
-                return NotFound(); // Báo lỗi nếu không có mã sinh viên
+                return View("NotFound"); // Đã sửa thành View
             }
 
             // Tìm sinh viên trong CSDL dựa vào khóa chính (StudentCode)
@@ -56,7 +56,7 @@ namespace FirstWebMVC.Controllers
             
             if (student == null)
             {
-                return NotFound(); // Báo lỗi nếu không tìm thấy sinh viên trong CSDL
+                return View("NotFound"); // Đã sửa thành View
             }
             
             // Trả dữ liệu của sinh viên đó về View Edit để hiển thị lên Form
@@ -71,7 +71,7 @@ namespace FirstWebMVC.Controllers
             // Kiểm tra xem mã sinh viên trên đường dẫn (id) và trong Form (student.StudentCode) có khớp nhau không
             if (id != student.StudentCode)
             {
-                return NotFound();
+                return View("NotFound"); // Đã sửa thành View
             }
 
             // Kiểm tra tính hợp lệ của dữ liệu
@@ -97,14 +97,14 @@ namespace FirstWebMVC.Controllers
         {
             if (id == null)
             {
-                return NotFound(); // Báo lỗi nếu không nhận được mã sinh viên
+                return View("NotFound"); // Đã sửa thành View
             }
 
             // Tìm bản ghi trong CSDL
             var student = await _context.Students.FindAsync(id);
             if (student == null)
             {
-                return NotFound();
+                return View("NotFound"); // Đã sửa thành View
             }
 
             // Trả dữ liệu về View để hiển thị form xác nhận

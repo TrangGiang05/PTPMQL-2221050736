@@ -15,11 +15,25 @@
             <div class="form-group mb-3">
                 <label asp-for="StudentCode" class="control-label">Mã Sinh Viên</label>
                 <input asp-for="StudentCode" class="form-control" />
+                <span asp-validation-for="StudentCode" class="text-danger"></span>
             </div>
             
             <div class="form-group mb-3">
                 <label asp-for="FullName" class="control-label">Họ và Tên</label>
                 <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Age" class="control-label">Tuổi</label>
+                <input asp-for="Age" class="form-control" type="number" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="control-label">Email</label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             
             <div class="form-group mt-3">
@@ -29,3 +43,7 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
