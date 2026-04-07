@@ -13,5 +13,6 @@ namespace FirstWebMVC.Data
 
         // Khai báo các bảng trong CSDL ở đây (Ví dụ với bảng Student)
         public DbSet<Student> Students { get; set; }
+        public DbSet<Faculty> Faculties { get; set; }
     }
 }

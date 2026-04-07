@@ -36,6 +36,13 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             
+            <div class="form-group mb-3">
+                <label asp-for="FacultyID" class="control-label fw-bold">Chọn Khoa</label>
+                <select asp-for="FacultyID" class="form-select" asp-items="ViewBag.FacultyList">
+                    <option value="">-- Vui lòng chọn một khoa --</option>
+                </select>
+                <span asp-validation-for="FacultyID" class="text-danger"></span>
+            </div>
             <div class="form-group mt-3">
                 <input type="submit" value="Lưu dữ liệu" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-secondary ms-2">Hủy / Quay lại danh sách</a>

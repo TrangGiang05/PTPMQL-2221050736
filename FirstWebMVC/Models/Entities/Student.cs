@@ -25,5 +25,10 @@ namespace FirstWebMVC.Models.Entities
         [Required(ErrorMessage = "Vui lòng nhập Email!")]
         [EmailAddress(ErrorMessage = "Email không đúng định dạng (VD: ten@gmail.com)!")]
         public string Email { get; set; }
+
+        public string FacultyID { get; set; } // Cột Khóa ngoại (cùng kiểu string với bảng Faculty)
+
+        [ForeignKey("FacultyID")]
+        public virtual Faculty Faculty { get; set; } // Navigation Property trỏ về Khoa
     }
 }
