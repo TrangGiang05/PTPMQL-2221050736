@@ -1,0 +1,18 @@
+@model FirstWebMVC.Models.Entities.Product
+
+@{
+    ViewData["Title"] = "Xóa Sản phẩm";
+}
+
+<div class="container mt-4">
+    <div class="alert alert-danger col-md-6 mx-auto text-center shadow-sm" role="alert">
+        <h4 class="alert-heading">Cảnh báo!</h4>
+        <p>Bạn có chắc chắn muốn xóa vĩnh viễn sản phẩm <strong>@Model.Name</strong> không?</p>
+        <hr>
+        <form asp-action="Delete" method="post" class="d-inline">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Vâng, Xóa ngay</button>
+            <a asp-action="Index" class="btn btn-secondary">Không, Quay lại</a>
+        </form>
+    </div>
+</div>

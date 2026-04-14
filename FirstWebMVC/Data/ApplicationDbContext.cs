@@ -1,18 +1,21 @@
 using Microsoft.EntityFrameworkCore;
-using FirstWebMVC.Models.Entities; // Thay thế bằng đường dẫn tới thư mục chứa Model của bạn nếu khác
+using FirstWebMVC.Models.Entities; // Đảm bảo namespace này trỏ đúng đến nơi chứa Customer, Order...
 
 namespace FirstWebMVC.Data
 {
-    // Kế thừa từ DbContext của Entity Framework Core
     public class ApplicationDbContext : DbContext
     {
-        // Constructor nhận cấu hình (options) từ Program.cs truyền vào
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
-        // Khai báo các bảng trong CSDL ở đây (Ví dụ với bảng Student)
         public DbSet<Student> Students { get; set; }
         public DbSet<Faculty> Faculties { get; set; }
+
+        // THÊM 4 DÒNG MỚI CHO BÀI THỰC HÀNH BUỔI 9:
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
     }
 }

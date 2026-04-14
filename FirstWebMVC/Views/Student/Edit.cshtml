@@ -13,32 +13,40 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
             <div class="form-group mb-3">
-                <label asp-for="StudentCode" class="control-label">Mã Sinh Viên</label>
+                <label asp-for="StudentCode" class="control-label fw-bold">Mã Sinh Viên</label>
                 <input asp-for="StudentCode" class="form-control" readonly />
                 <span asp-validation-for="StudentCode" class="text-danger"></span>
             </div>
             
             <div class="form-group mb-3">
-                <label asp-for="FullName" class="control-label">Họ và Tên</label>
+                <label asp-for="FullName" class="control-label fw-bold">Họ và Tên</label>
                 <input asp-for="FullName" class="form-control" />
                 <span asp-validation-for="FullName" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Age" class="control-label">Tuổi</label>
+                <label asp-for="Age" class="control-label fw-bold">Tuổi</label>
                 <input asp-for="Age" class="form-control" type="number" />
                 <span asp-validation-for="Age" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Email" class="control-label">Email</label>
+                <label asp-for="Email" class="control-label fw-bold">Email</label>
                 <input asp-for="Email" class="form-control" type="email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="FacultyID" class="control-label fw-bold">Chọn Khoa</label>
+                <select asp-for="FacultyID" class="form-select" asp-items="ViewBag.FacultyList">
+                    <option value="">-- Vui lòng chọn một khoa --</option>
+                </select>
+                <span asp-validation-for="FacultyID" class="text-danger"></span>
+            </div>
             
-            <div class="form-group mt-3">
+            <div class="form-group mt-4">
                 <input type="submit" value="Lưu thay đổi" class="btn btn-warning" />
-                <a asp-action="Index" class="btn btn-secondary ms-2">Hủy / Quay lại</a>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Hủy / Quay lại danh sách</a>
             </div>
         </form>
     </div>

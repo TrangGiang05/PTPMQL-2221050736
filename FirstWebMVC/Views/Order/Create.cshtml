@@ -1,0 +1,56 @@
+@model FirstWebMVC.Models.CreateOrderViewModel
+
+@{
+    ViewData["Title"] = "Tạo Đơn Hàng Mới";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-cart-plus"></i> Lên Đơn Mua Hàng</h4>
+                </div>
+                <div class="card-body p-4 bg-light">
+                    <form asp-action="Create" method="post">
+                        
+                        <div class="mb-3">
+                            <label asp-for="CustomerId" class="form-label fw-bold">1. Chọn Khách Hàng</label>
+                            <select asp-for="CustomerId" class="form-select border-primary" asp-items="ViewBag.Customers">
+                                <option value="">-- Click để chọn khách hàng --</option>
+                            </select>
+                            <span asp-validation-for="CustomerId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ProductId" class="form-label fw-bold">2. Chọn Sản Phẩm</label>
+                            <select asp-for="ProductId" class="form-select border-primary" asp-items="ViewBag.Products">
+                                <option value="">-- Click để chọn sản phẩm --</option>
+                            </select>
+                            <span asp-validation-for="ProductId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Quantity" class="form-label fw-bold">3. Số lượng</label>
+                            <input asp-for="Quantity" class="form-control border-primary" type="number" min="1" value="1" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm">
+                                Chốt Đơn Ngay
+                            </button>
+                            <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-secondary">
+                                Hủy bỏ & Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
