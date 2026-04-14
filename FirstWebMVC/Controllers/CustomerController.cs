@@ -44,7 +44,7 @@ namespace FirstWebMVC.Controllers
                 _context.SaveChanges();           // Lưu thật sự vào file App.db
                 return RedirectToAction(nameof(Index)); // Lưu xong thì quay về trang danh sách
             }
-            
+
             // Nếu dữ liệu sai (ví dụ quên nhập tên), trả về lại Form kèm thông báo lỗi
             return View(customer);
         }
@@ -78,7 +78,11 @@ namespace FirstWebMVC.Controllers
                     // Tính tổng tiền = Tổng của (Số lượng * Đơn giá) trong chi tiết đơn hàng
                     TotalAmount = o.OrderDetails.Sum(od => od.Quantity * od.UnitPrice),
                     // Lấy ra danh sách tên sản phẩm
-                    ProductNames = o.OrderDetails.Select(od => od.Product.Name).ToList()
+                    OrderItems = o.OrderDetails.Select(od => new OrderItemDetail
+                    {
+                        ProductName = od.Product.Name,
+                        Quantity = od.Quantity
+                    }).ToList()
                 }).ToList()
             };
 

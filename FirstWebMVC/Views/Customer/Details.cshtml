@@ -22,36 +22,48 @@
 
     @if (Model.Orders != null && Model.Orders.Any())
     {
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th width="15%">Mã Đơn (Order ID)</th>
-                    <th width="25%">Ngày mua</th>
-                    <th width="40%">Sản phẩm bao gồm</th>
-                    <th width="20%">Tổng tiền (VNĐ)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Model.Orders)
-                {
-                    <tr>
-                        <td class="text-center fw-bold">#@order.OrderId</td>
-                        <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td>
-                            <ul class="mb-0">
-                                @foreach (var productName in order.ProductNames)
-                                {
-                                    <li>@productName</li>
-                                }
-                            </ul>
-                        </td>
-                        <td class="text-danger fw-bold text-end">
-                            @order.TotalAmount.ToString("N0") đ
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <table class="table table-bordered table-striped table-hover shadow-sm bg-white">
+    <thead class="table-dark text-center">
+        <tr>
+            <th width="15%">Mã Đơn (ID)</th>
+            <th width="20%">Ngày mua</th>
+            <th width="35%">Sản phẩm bao gồm</th>
+            <th width="10%">Số lượng</th> 
+            <th width="20%">Tổng tiền (VNĐ)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.Orders)
+        {
+            <tr class="align-middle">
+                <td class="text-center fw-bold text-primary">#@order.OrderId</td>
+                <td class="text-center">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                
+                <td>
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var item in order.OrderItems)
+                        {
+                            <li>• @item.ProductName</li>
+                        }
+                    </ul>
+                </td>
+
+                <td class="text-center">
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var item in order.OrderItems)
+                        {
+                            <li class="fw-bold">@item.Quantity</li>
+                        }
+                    </ul>
+                </td>
+
+                <td class="text-danger fw-bold text-end">
+                    @order.TotalAmount.ToString("N0") đ
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
     }
     else
     {

@@ -14,12 +14,21 @@ namespace FirstWebMVC.Models
         public List<OrderSummary> Orders { get; set; } = new List<OrderSummary>();
     }
 
+    // MỚI: Class đại diện cho từng dòng sản phẩm trong đơn hàng
+    public class OrderItemDetail
+    {
+        public string ProductName { get; set; }
+        public int Quantity { get; set; }
+    }
+
     // Class phụ trợ để hiển thị tóm tắt từng đơn hàng
     public class OrderSummary
     {
         public int OrderId { get; set; }
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; } // Tổng tiền đơn hàng
-        public List<string> ProductNames { get; set; } = new List<string>(); // Tên các món đã mua
+        
+        // ĐÃ SỬA: Thay List<string> bằng List<OrderItemDetail> để lưu cả Tên và Số lượng
+        public List<OrderItemDetail> OrderItems { get; set; } = new List<OrderItemDetail>();
     }
 }
