@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using FirstWebMVC.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace FirstWebMVC.Controllers
 {
@@ -51,8 +53,8 @@ namespace FirstWebMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Add(student);
-                await _context.SaveChangesAsync();
+                _context.Add(student); //cau lenh nay use entities framwork de quan ly trang thai cua du lieu
+                await _context.SaveChangesAsync(); // luu thay doi vao trong csdl
                 return RedirectToAction(nameof(Index));
             }
             
@@ -60,7 +62,6 @@ namespace FirstWebMVC.Controllers
             return View(student);
         }
 
-        // --- YÊU CẦU 4: CHỈNH SỬA DỮ LIỆU (EDIT) ---
         // 1. Action GET: Lấy dữ liệu cũ và danh sách khoa lên Form
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
@@ -138,5 +139,66 @@ namespace FirstWebMVC.Controllers
             }
             return RedirectToAction(nameof(Index)); 
         }
+
+        // --- ĐỌC DỮ LIỆU TỪ EXCEL VÀ LƯU VÀO CSDL ---
+        [HttpPost]
+        public async Task<IActionResult> ImportExcel(IFormFile fileExcel)
+        {
+            // 1. Kiểm tra xem người dùng có chọn file chưa
+            if (fileExcel == null || fileExcel.Length == 0)
+            {
+                TempData["Error"] = "Vui lòng chọn một file Excel!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var studentsList = new List<Student>();
+
+            try
+            {
+                // 2. Mở file Excel ra đọc
+                using (var stream = new MemoryStream())
+                {
+                    await fileExcel.CopyToAsync(stream);
+                    using (var workbook = new XLWorkbook(stream))
+                    {
+                        // Lấy Sheet đầu tiên
+                        var worksheet = workbook.Worksheet(1);
+                        var rows = worksheet.RangeUsed().RowsUsed();
+
+                        // 3. Đọc từ dòng 2 (Skip dòng 1 vì là dòng Tiêu đề)
+                        foreach (var row in rows.Skip(1))
+                        {
+                            var newStudent = new Student
+                            {
+                                // Đối chiếu đúng 5 cột trong file Template Excel
+                                StudentCode = row.Cell(1).Value.ToString().Trim(),
+                                FullName = row.Cell(2).Value.ToString().Trim(),
+                                Age = int.Parse(row.Cell(3).Value.ToString().Trim()),
+                                Email = row.Cell(4).Value.ToString().Trim(),
+                                FacultyID = row.Cell(5).Value.ToString().Trim()
+                            };
+
+                            studentsList.Add(newStudent);
+                        }
+                    }
+                }
+
+                // 4. Lưu toàn bộ vào Database
+                if (studentsList.Any())
+                {
+                    _context.Students.AddRange(studentsList);
+                    await _context.SaveChangesAsync();
+                }
+
+                TempData["Success"] = $"Import thành công {studentsList.Count} sinh viên!";
+            }
+            catch (System.Exception ex)
+            {
+                TempData["Error"] = "Có lỗi xảy ra khi đọc file. Vui lòng kiểm tra lại định dạng file Excel mẫu! Chi tiết: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
