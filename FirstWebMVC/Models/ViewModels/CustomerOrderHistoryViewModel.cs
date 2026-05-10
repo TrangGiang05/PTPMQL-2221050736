@@ -17,6 +17,7 @@ namespace FirstWebMVC.Models
     // MỚI: Class đại diện cho từng dòng sản phẩm trong đơn hàng
     public class OrderItemDetail
     {
+        public int OrderDetailId { get; set; } // Thêm ID để xóa được
         public string ProductName { get; set; }
         public int Quantity { get; set; }
     }

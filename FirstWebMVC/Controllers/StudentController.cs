@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using FirstWebMVC.Data;
 using FirstWebMVC.Models.Entities;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using FirstWebMVC.Models.ViewModels;
@@ -36,6 +39,27 @@ namespace FirstWebMVC.Controllers
             return View(danhSachSinhVien);
         }
 
+        // --- XEM CHI TIẾT SINH VIÊN (DETAILS) ---
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+        
+            var student = await _context.Students
+                .Include(s => s.Faculty)
+                .FirstOrDefaultAsync(s => s.StudentCode == id);
+            
+            if (student == null)
+            {
+                return NotFound();
+            }
+        
+            return View(student);
+        }
+
         // --- YÊU CẦU 3: THÊM MỚI DỮ LIỆU (CREATE) ---
         [HttpGet]
         public IActionResult Create()
@@ -53,6 +77,15 @@ namespace FirstWebMVC.Controllers
 
             if (ModelState.IsValid)
             {
+                // Kiểm tra xem mã sinh viên có tồn tại chưa
+                var existingStudent = await _context.Students.FirstOrDefaultAsync(s => s.StudentCode == student.StudentCode);
+                if (existingStudent != null)
+                {
+                    ModelState.AddModelError("StudentCode", "Mã sinh viên này đã tồn tại trong hệ thống!");
+                    ViewBag.FacultyList = new SelectList(_context.Faculties.ToList(), "FacultyID", "FacultyName", student.FacultyID);
+                    return View(student);
+                }
+
                 _context.Add(student); //cau lenh nay use entities framwork de quan ly trang thai cua du lieu
                 await _context.SaveChangesAsync(); // luu thay doi vao trong csdl
                 return RedirectToAction(nameof(Index));
@@ -99,9 +132,35 @@ namespace FirstWebMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Update(student);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Update(student);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // Lỗi này xảy ra khi dữ liệu bị thay đổi bởi người dùng khác
+                    var studentExists = await _context.Students.AnyAsync(s => s.StudentCode == student.StudentCode);
+                    if (!studentExists)
+                    {
+                        return NotFound("Sinh viên này đã bị xóa bởi người dùng khác!");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Dữ liệu đã được thay đổi bởi người dùng khác. Vui lòng tải lại trang!");
+                    }
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Lỗi từ Database (ví dụ: Vi phạm constraint)
+                    ModelState.AddModelError("", "Lỗi khi lưu dữ liệu: " + ex.InnerException?.Message);
+                }
+                catch (Exception ex)
+                {
+                    // Lỗi không mong đợi
+                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                }
             }
             
             // Nếu có lỗi, nạp lại danh sách khoa để hiển thị lại Form
@@ -152,6 +211,8 @@ namespace FirstWebMVC.Controllers
             }
 
             var studentsList = new List<Student>();
+            var duplicateCount = 0;
+            var errorRows = new List<string>();
 
             try
             {
@@ -168,17 +229,35 @@ namespace FirstWebMVC.Controllers
                         // 3. Đọc từ dòng 2 (Skip dòng 1 vì là dòng Tiêu đề)
                         foreach (var row in rows.Skip(1))
                         {
-                            var newStudent = new Student
+                            try
                             {
-                                // Đối chiếu đúng 5 cột trong file Template Excel
-                                StudentCode = row.Cell(1).Value.ToString().Trim(),
-                                FullName = row.Cell(2).Value.ToString().Trim(),
-                                Age = int.Parse(row.Cell(3).Value.ToString().Trim()),
-                                Email = row.Cell(4).Value.ToString().Trim(),
-                                FacultyID = row.Cell(5).Value.ToString().Trim()
-                            };
+                                var studentCode = row.Cell(1).Value.ToString().Trim();
 
-                            studentsList.Add(newStudent);
+                                // Kiểm tra xem mã sinh viên đã tồn tại chưa
+                                var existingStudent = await _context.Students.FirstOrDefaultAsync(s => s.StudentCode == studentCode);
+                                if (existingStudent != null)
+                                {
+                                    duplicateCount++;
+                                    errorRows.Add($"Dòng {row.RowNumber()}: Mã SV '{studentCode}' đã tồn tại");
+                                    continue;
+                                }
+
+                                var newStudent = new Student
+                                {
+                                    // Đối chiếu đúng 5 cột trong file Template Excel
+                                    StudentCode = studentCode,
+                                    FullName = row.Cell(2).Value.ToString().Trim(),
+                                    Age = int.Parse(row.Cell(3).Value.ToString().Trim()),
+                                    Email = row.Cell(4).Value.ToString().Trim(),
+                                    FacultyID = row.Cell(5).Value.ToString().Trim()
+                                };
+
+                                studentsList.Add(newStudent);
+                            }
+                            catch (System.Exception ex)
+                            {
+                                errorRows.Add($"Dòng {row.RowNumber()}: {ex.Message}");
+                            }
                         }
                     }
                 }
@@ -190,7 +269,19 @@ namespace FirstWebMVC.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                TempData["Success"] = $"Import thành công {studentsList.Count} sinh viên!";
+                // Tạo thông báo
+                string message = $"Import thành công {studentsList.Count} sinh viên!";
+                if (duplicateCount > 0)
+                {
+                    message += $" (Bỏ qua {duplicateCount} mã trùng lặp)";
+                }
+                if (errorRows.Any())
+                {
+                    message += $" - Lỗi: {string.Join("; ", errorRows.Take(3))}";
+                    if (errorRows.Count > 3) message += "...";
+                }
+
+                TempData["Success"] = message;
             }
             catch (System.Exception ex)
             {

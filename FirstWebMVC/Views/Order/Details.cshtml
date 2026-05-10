@@ -1,0 +1,104 @@
+@model FirstWebMVC.Models.Entities.Order
+
+@{
+    ViewData["Title"] = "Chi tiết Đơn hàng";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary fw-bold mb-0">
+            <i class="bi bi-receipt me-2"></i>CHI TIẾT ĐƠN HÀNG #@Model.Id
+        </h2>
+        <div class="btn-group" role="group">
+            <a asp-action="Index" class="btn btn-outline-info btn-sm shadow-sm">
+                <i class="bi bi-list-ul"></i> Danh sách
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning btn-sm shadow-sm">
+                <i class="bi bi-pencil"></i> Sửa
+            </a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm shadow-sm">
+                <i class="bi bi-trash"></i> Xóa
+            </a>
+            <a asp-controller="Customer" asp-action="Details" asp-route-id="@Model.CustomerId" class="btn btn-outline-secondary btn-sm shadow-sm">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+    <hr />
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white p-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle-fill me-2"></i>Thông tin Đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Mã Đơn:</strong> #@Model.Id</p>
+                    <p class="mb-0"><strong>Ngày Mua:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-info text-white p-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-person-fill me-2"></i>Thông tin Khách hàng</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Tên:</strong> @Model.Customer?.Name</p>
+                    <p class="mb-0"><strong>Số điện thoại:</strong> @Model.Customer?.Phone</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mt-4 mb-3 fw-bold text-dark"><i class="bi bi-cart3 me-2"></i>Danh sách Sản phẩm</h4>
+
+    @if (Model.OrderDetails != null && Model.OrderDetails.Any())
+    {
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-bordered align-middle mb-0 bg-white">
+                <thead class="table-dark text-center text-uppercase small">
+                    <tr>
+                        <th width="5%">STT</th>
+                        <th width="40%">Tên Sản phẩm</th>
+                        <th width="15%">Số lượng</th>
+                        <th width="20%">Đơn giá</th>
+                        <th width="20%">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int stt = 0;
+                        decimal totalAmount = 0;
+                    }
+                    @foreach (var item in Model.OrderDetails)
+                    {
+                        stt++;
+                        decimal lineTotal = item.Quantity * item.UnitPrice;
+                        totalAmount += lineTotal;
+                        <tr>
+                            <td class="text-center fw-bold">@stt</td>
+                            <td class="px-3">@item.Product?.Name</td>
+                            <td class="text-center fw-bold">@item.Quantity</td>
+                            <td class="text-end">@item.UnitPrice.ToString("N0") VNĐ</td>
+                            <td class="text-end text-danger fw-bold">@lineTotal.ToString("N0") VNĐ</td>
+                        </tr>
+                    }
+                    <tr class="table-light fw-bold">
+                        <td colspan="4" class="text-end px-3">TỔNG CỘNG:</td>
+                        <td class="text-end text-success" style="font-size: 1.2rem;">
+                            @totalAmount.ToString("N0") VNĐ
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning border-0 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i> Đơn hàng này không có sản phẩm nào!
+        </div>
+    }
+</div>

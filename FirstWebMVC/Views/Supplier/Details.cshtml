@@ -1,0 +1,50 @@
+@model FirstWebMVC.Models.Entities.Supplier
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow border-0">
+                <div class="card-header bg-info text-white p-3">
+                    <h4 class="mb-0 fw-bold">THÔNG TIN NHÀ CUNG CẤP</h4>
+                </div>
+                <div class="card-body p-4">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-muted mb-3">
+                            Tên nhà cung cấp:
+                        </dt>
+                        <dd class="col-sm-8 fw-bold fs-5 text-dark mb-3">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted mb-3">
+                            Số điện thoại:
+                        </dt>
+                        <dd class="col-sm-8 text-dark mb-3">
+                            <span class="badge bg-light text-dark border p-2 px-3 shadow-sm">
+                                <i class="bi bi-telephone-fill me-1"></i> @Html.DisplayFor(model => model.Phone)
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted mb-3">
+                            Địa chỉ:
+                        </dt>
+                        <dd class="col-sm-8 text-dark mb-3">
+                            @Html.DisplayFor(model => model.Address)
+                        </dd>
+                    </dl>
+
+                    <hr class="my-4" />
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">
+                            <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning px-5 shadow-sm fw-bold">
+                            Chỉnh sửa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

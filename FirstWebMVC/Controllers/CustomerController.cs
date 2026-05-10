@@ -4,6 +4,7 @@ using FirstWebMVC.Data;
 using FirstWebMVC.Models.Entities;
 using FirstWebMVC.Models; // Gọi namespace chứa ViewModel
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FirstWebMVC.Controllers
 {
@@ -17,13 +18,19 @@ namespace FirstWebMVC.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Hiển thị danh sách khách hàng
+        /// </summary>
         // --- 1. Chức năng READ: Hiển thị danh sách khách hàng ---
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var customers = _context.Customers.ToList();
+            var customers = await _context.Customers.ToListAsync();
             return View(customers);
         }
 
+        /// <summary>
+        /// Hiển thị form tạo mới khách hàng
+        /// </summary>
         // GET: Customer/Create
         // Action này chỉ có nhiệm vụ trả về cái View chứa cái Form trắng để bạn điền
         public IActionResult Create()
@@ -31,17 +38,21 @@ namespace FirstWebMVC.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Xử lý tạo mới khách hàng
+        /// </summary>
+        /// <param name="customer">Thông tin khách hàng cần tạo</param>
         // POST: Customer/Create
         // Action này nhận dữ liệu từ Form gửi lên (đối tượng customer)
         [HttpPost]
         [ValidateAntiForgeryToken] // Bảo mật: chống tấn công giả mạo yêu cầu
-        public IActionResult Create(Customer customer)
+        public async Task<IActionResult> Create(Customer customer)
         {
             // Kiểm tra xem dữ liệu có khớp với các ràng buộc [Required], [Phone] ở Model không
             if (ModelState.IsValid)
             {
                 _context.Customers.Add(customer); // Thêm vào bộ nhớ đệm
-                _context.SaveChanges();           // Lưu thật sự vào file App.db
+                await _context.SaveChangesAsync();           // Lưu thật sự vào file App.db
                 return RedirectToAction(nameof(Index)); // Lưu xong thì quay về trang danh sách
             }
 
@@ -49,15 +60,19 @@ namespace FirstWebMVC.Controllers
             return View(customer);
         }
 
+        /// <summary>
+        /// Hiển thị chi tiết khách hàng và lịch sử đơn hàng
+        /// </summary>
+        /// <param name="id">ID khách hàng cần xem</param>
         // --- 2. Chức năng XEM CHI TIẾT ĐƠN HÀNG (Yêu cầu khó nhất) ---
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             // Bước 2.1: Truy vấn CSDL, dùng Include để nối 4 bảng lại với nhau
-            var customerWithOrders = _context.Customers
+            var customerWithOrders = await _context.Customers
                 .Include(c => c.Orders)                     // Nối Khách hàng -> Đơn hàng
                     .ThenInclude(o => o.OrderDetails)       // Nối Đơn hàng -> Chi tiết đơn hàng
                         .ThenInclude(od => od.Product)      // Nối Chi tiết Đơn hàng -> Sản phẩm
-                .FirstOrDefault(c => c.Id == id); // Tìm đúng khách hàng có Id được truyền vào
+                .FirstOrDefaultAsync(c => c.Id == id); // Tìm đúng khách hàng có Id được truyền vào
 
             // Nếu không tìm thấy khách hàng
             if (customerWithOrders == null)
@@ -77,9 +92,10 @@ namespace FirstWebMVC.Controllers
                     OrderDate = o.OrderDate,
                     // Tính tổng tiền = Tổng của (Số lượng * Đơn giá) trong chi tiết đơn hàng
                     TotalAmount = o.OrderDetails.Sum(od => od.Quantity * od.UnitPrice),
-                    // Lấy ra danh sách tên sản phẩm
+                    // Lấy ra danh sách tên sản phẩm kèm ID
                     OrderItems = o.OrderDetails.Select(od => new OrderItemDetail
                     {
+                        OrderDetailId = od.Id,
                         ProductName = od.Product.Name,
                         Quantity = od.Quantity
                     }).ToList()

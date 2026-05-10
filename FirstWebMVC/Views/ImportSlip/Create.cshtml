@@ -1,0 +1,152 @@
+@model FirstWebMVC.Models.ViewModels.ImportSlipViewModel
+
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white p-3">
+            <h4 class="mb-0"><i class="bi bi-file-earmark-plus"></i> LẬP PHIẾU NHẬP KHO</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create" method="post">
+                
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h5 class="text-secondary border-bottom pb-2 mb-3">1. Thông tin chung</h5>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Ngày nhập</label>
+                        <input type="date" asp-for="ImportDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Nhà cung cấp</label>
+                        <select asp-for="SupplierId" asp-items="ViewBag.SupplierId" class="form-select border-primary">
+                            <option value="">-- Chọn Nhà cung cấp --</option>
+                        </select>
+                        <span asp-validation-for="SupplierId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5 class="text-secondary border-bottom pb-2 mb-3">2. Chi tiết nhập hàng</h5>
+                        <div class="table-responsive">
+                            <table id="detailsTable" class="table table-bordered table-hover shadow-sm">
+                                <thead class="table-light">
+                                    <tr class="text-center">
+                                        <th style="width: 40%;">Tên Thiết bị</th>
+                                        <th style="width: 20%;">Số lượng</th>
+                                        <th style="width: 25%;">Đơn giá nhập (VNĐ)</th>
+                                        <th style="width: 10%;">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.Details.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <select name="Details[@i].DeviceId" asp-items="ViewBag.DeviceId" class="form-select">
+                                                    <option value="">-- Chọn thiết bị --</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="Details[@i].Quantity" value="1" min="1" class="form-control text-center" />
+                                            </td>
+                                            <td>
+                                                <input type="number" name="Details[@i].ImportPrice" value="0" min="0" class="form-control text-end" />
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" onclick="removeRow(this)" class="btn btn-outline-danger btn-sm">
+                                                   Xóa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <button type="button" onclick="addRow()" class="btn btn-outline-success btn-sm mt-2">
+                            <i class="bi bi-plus-circle"></i> + Thêm dòng thiết bị
+                        </button>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary px-4">Quay lại</a>
+                    <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+                        <i class="bi bi-check-circle"></i> LƯU PHIẾU NHẬP
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let rowIndex = @Model.Details.Count; // Lấy index tiếp theo dựa trên số lượng dòng ban đầu
+
+        function addRow() {
+            // Tìm cái dropdown Thiết bị ở dòng đầu tiên để lấy danh sách sản phẩm
+            let firstSelect = document.querySelector('select[name^="Details[0].DeviceId"]');
+            if (!firstSelect) {
+                alert("Lỗi: Không tìm thấy danh sách thiết bị mẫu!");
+                return;
+            }
+            let deviceOptions = firstSelect.innerHTML;
+            
+            let html = `
+                <tr>
+                    <td>
+                        <select name="Details[${rowIndex}].DeviceId" class="form-select" required>
+                            ${deviceOptions}
+                        </select>
+                    </td>
+                    <td><input type="number" name="Details[${rowIndex}].Quantity" value="1" min="1" class="form-control text-center" required /></td>
+                    <td><input type="number" name="Details[${rowIndex}].ImportPrice" value="0" min="0" class="form-control text-end" required /></td>
+                    <td class="text-center">
+                        <button type="button" onclick="removeRow(this)" class="btn btn-outline-danger btn-sm">Xóa</button>
+                    </td>
+                </tr>
+            `;
+            document.querySelector('#detailsTable tbody').insertAdjacentHTML('beforeend', html);
+            rowIndex++;
+        }
+
+        function removeRow(btn) {
+            let rows = document.querySelectorAll('#detailsTable tbody tr');
+            if (rows.length > 1) {
+                btn.closest('tr').remove();
+            } else {
+                alert("Cảnh báo: Phải có ít nhất một mặt hàng trong phiếu!");
+            }
+        }
+
+        // BẮT SỰ KIỆN KHI BẤM NÚT LƯU
+        document.querySelector('form').addEventListener('submit', function(e) {
+            let rows = document.querySelectorAll('#detailsTable tbody tr');
+            let hasError = false;
+
+            // 1. Kiểm tra số lượng dòng
+            if (rows.length === 0) {
+                alert("Lỗi: Phải có ít nhất một mặt hàng mới có thể lưu phiếu!");
+                e.preventDefault(); // Ngăn không cho gửi form
+                return;
+            }
+
+            // 2. Kiểm tra xem đã chọn thiết bị chưa
+            rows.forEach(row => {
+                let select = row.querySelector('select');
+                if (select && select.value === "") {
+                    hasError = true;
+                }
+            });
+
+            if (hasError) {
+                alert("Lỗi: Vui lòng chọn thiết bị cho tất cả các dòng!");
+                e.preventDefault();
+            }
+        });
+    </script>
+}

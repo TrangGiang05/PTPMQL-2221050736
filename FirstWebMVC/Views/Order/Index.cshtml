@@ -1,0 +1,80 @@
+@model IEnumerable<FirstWebMVC.Models.Entities.Order>
+
+@{
+    ViewData["Title"] = "Danh sách Đơn hàng";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary fw-bold mb-0">
+            <i class="bi bi-list-ul me-2"></i>DANH SÁCH ĐƠN HÀNG
+        </h2>
+        <a asp-action="Create" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle me-2"></i>Tạo Đơn hàng Mới
+        </a>
+    </div>
+    <hr />
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover align-middle mb-0 bg-white">
+                <thead class="table-dark text-center text-uppercase small">
+                    <tr>
+                        <th width="8%">Mã Đơn</th>
+                        <th width="20%">Khách hàng</th>
+                        <th width="12%">Ngày Mua</th>
+                        <th width="15%">Số Sản phẩm</th>
+                        <th width="20%">Tổng Tiền</th>
+                        <th width="25%">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        decimal totalAmount = order.OrderDetails?.Sum(od => od.Quantity * od.UnitPrice) ?? 0;
+                        int itemCount = order.OrderDetails?.Count ?? 0;
+                        
+                        <tr>
+                            <td class="text-center fw-bold text-primary">#@order.Id</td>
+                            <td class="px-3">
+                                <strong>@order.Customer?.Name</strong><br />
+                                <small class="text-muted">@order.Customer?.Phone</small>
+                            </td>
+                            <td class="text-center text-muted">@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center fw-bold">
+                                <span class="badge bg-info">@itemCount sản phẩm</span>
+                            </td>
+                            <td class="text-end fw-bold text-success">
+                                @totalAmount.ToString("N0") VNĐ
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-info text-white" 
+                                       title="Xem chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@order.Id" class="btn btn-warning" 
+                                       title="Sửa đơn hàng">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-danger" 
+                                       title="Xóa đơn hàng">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info border-0 shadow-sm" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i> 
+            Không có đơn hàng nào trong hệ thống. <a asp-action="Create" class="alert-link">Tạo đơn hàng mới</a>
+        </div>
+    }
+</div>

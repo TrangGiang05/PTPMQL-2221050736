@@ -1,0 +1,58 @@
+@model FirstWebMVC.Models.Entities.Supplier
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            
+            <div class="alert alert-warning text-center shadow-sm" role="alert">
+                <h5 class="alert-heading fw-bold mb-2">
+                    <i class="bi bi-exclamation-triangle-fill"></i> CẢNH BÁO XÓA!
+                </h5>
+                <p class="mb-0">Bạn có chắc chắn muốn xóa nhà cung cấp này không? Hành động này không thể hoàn tác.</p>
+            </div>
+
+            <div class="card shadow border-0">
+                <div class="card-header bg-danger text-white p-3">
+                    <h4 class="mb-0">XÓA NHÀ CUNG CẤP</h4>
+                </div>
+                <div class="card-body p-4">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5 text-muted">
+                            Tên nhà cung cấp:
+                        </dt>
+                        <dd class="col-sm-7 fw-bold text-dark">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+
+                        <dt class="col-sm-5 text-muted mt-2">
+                            Số điện thoại:
+                        </dt>
+                        <dd class="col-sm-7 text-dark mt-2">
+                            @Html.DisplayFor(model => model.Phone)
+                        </dd>
+
+                        <dt class="col-sm-5 text-muted mt-2">
+                            Địa chỉ:
+                        </dt>
+                        <dd class="col-sm-7 text-dark mt-2">
+                            @Html.DisplayFor(model => model.Address)
+                        </dd>
+                    </dl>
+
+                    <hr class="my-4" />
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary px-4">Hủy & Quay lại</a>
+                            <button type="submit" class="btn btn-danger px-5 shadow-sm fw-bold">
+                                Xác nhận Xóa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

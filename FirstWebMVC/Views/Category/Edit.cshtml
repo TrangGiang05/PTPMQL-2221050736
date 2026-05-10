@@ -1,0 +1,39 @@
+@model FirstWebMVC.Models.Entities.Category
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-warning text-dark p-3">
+                    <h4 class="mb-0 fw-bold">CHỈNH SỬA LOẠI THIẾT BỊ</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="form-group mb-4">
+                            <label asp-for="CategoryName" class="form-label fw-bold">Tên loại thiết bị</label>
+                            <input asp-for="CategoryName" class="form-control border-warning shadow-sm" />
+                            <span asp-validation-for="CategoryName" class="text-danger small"></span>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-secondary px-4">Quay lại</a>
+                            <button type="submit" class="btn btn-warning px-5 shadow-sm fw-bold">
+                                Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

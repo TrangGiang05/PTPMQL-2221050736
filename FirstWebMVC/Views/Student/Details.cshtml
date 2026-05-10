@@ -1,36 +1,50 @@
 @model FirstWebMVC.Models.Entities.Student
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết Sinh viên";
 }
 
-<h1>Details</h1>
+<h2>Chi tiết thông tin Sinh viên</h2>
+<hr />
 
-<div>
-    <h4>Student</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FullName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FullName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Age)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Age)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-    </dl>
+<div class="row">
+    <div class="col-md-8">
+        <dl class="row">
+            <dt class="col-sm-4 fw-bold">Mã Sinh Viên</dt>
+            <dd class="col-sm-8">
+                <span class="badge bg-primary text-white fs-6">@Html.DisplayFor(model => model.StudentCode)</span>
+            </dd>
+
+            <dt class="col-sm-4 fw-bold">Họ và Tên</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
+
+            <dt class="col-sm-4 fw-bold">Tuổi</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Age)</dd>
+
+            <dt class="col-sm-4 fw-bold">Email</dt>
+            <dd class="col-sm-8">
+                <a href="mailto:@Model.Email">@Html.DisplayFor(model => model.Email)</a>
+            </dd>
+
+            <dt class="col-sm-4 fw-bold">Tên Khoa</dt>
+            <dd class="col-sm-8">
+                @if (Model.Faculty != null)
+                {
+                    <span class="badge bg-success">@Model.Faculty.FacultyName</span>
+                }
+                else
+                {
+                    <span class="text-muted">Chưa được phân công khoa</span>
+                }
+            </dd>
+        </dl>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.StudentCode">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<hr />
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.StudentCode" class="btn btn-warning">Sửa</a>
+    <a asp-action="Delete" asp-route-id="@Model.StudentCode" class="btn btn-danger">Xóa</a>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
 </div>

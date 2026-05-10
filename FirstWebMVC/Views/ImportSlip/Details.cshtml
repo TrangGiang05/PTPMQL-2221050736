@@ -1,0 +1,66 @@
+@model FirstWebMVC.Models.Entities.ImportSlip
+
+<div class="container mt-4">
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 fw-bold">CHI TIẾT PHIẾU NHẬP KHO</h4>
+            <span class="badge bg-light text-primary fs-6 shadow-sm">Mã phiếu: PN-@Model.Id</span>
+        </div>
+        <div class="card-body p-4">
+            
+            <div class="row mb-4 bg-light p-3 rounded border border-light shadow-sm">
+                <div class="col-md-6">
+                    <p class="mb-1"><span class="text-muted fw-bold">Ngày nhập:</span></p>
+                    <p class="fs-5 fw-bold text-dark mb-0">@Model.ImportDate.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-1"><span class="text-muted fw-bold">Nhà cung cấp:</span></p>
+                    <p class="fs-5 fw-bold text-dark mb-0">@Model.Supplier?.Name</p>
+                </div>
+            </div>
+
+            <h5 class="text-primary fw-bold border-bottom pb-2 mb-3">Danh sách mặt hàng</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table-striped align-middle shadow-sm">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th style="width: 40%;">Tên Thiết bị</th>
+                            <th style="width: 15%;">Số lượng</th>
+                            <th style="width: 20%;">Đơn giá nhập</th>
+                            <th style="width: 25%;">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ImportSlipDetails != null && Model.ImportSlipDetails.Any())
+                        {
+                            @foreach (var item in Model.ImportSlipDetails) {
+                                <tr>
+                                    <td class="fw-semibold px-3">@item.Device?.DeviceName</td>
+                                    <td class="text-center">@item.Quantity</td>
+                                    <td class="text-end px-3">@item.ImportPrice.ToString("N0") VNĐ</td>
+                                    <td class="text-end px-3 fw-bold text-danger">@item.TotalPrice.ToString("N0") VNĐ</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">Không có mặt hàng nào trong phiếu nhập này.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="d-flex justify-content-start">
+                <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm fw-bold">
+                    Quay lại danh sách
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</div>

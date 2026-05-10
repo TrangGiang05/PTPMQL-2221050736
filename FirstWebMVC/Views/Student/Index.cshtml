@@ -49,6 +49,7 @@
                 <td class="align-middle">@item.FullName</td>
                 <td class="align-middle">@item.FacultyName</td>
                 <td class="text-center align-middle">
+                    <a asp-action="Details" asp-route-id="@item.StudentCode" class="btn btn-sm btn-outline-info me-1">Xem</a>
                     <a asp-action="Edit" asp-route-id="@item.StudentCode" class="btn btn-sm btn-outline-primary me-1">Sửa</a>
                     <a asp-action="Delete" asp-route-id="@item.StudentCode" class="btn btn-sm btn-outline-danger">Xóa</a>
                 </td>

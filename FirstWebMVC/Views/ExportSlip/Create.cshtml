@@ -1,0 +1,139 @@
+@model FirstWebMVC.Models.ViewModels.ExportSlipViewModel
+
+<div class="container mt-4">
+    <form asp-action="Create" method="post" id="exportForm">
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-danger text-white p-3">
+                <h4 class="mb-0 fw-bold">LẬP PHIẾU XUẤT KHO</h4>
+            </div>
+            <div class="card-body p-4">
+
+                <h5 class="text-danger fw-bold border-bottom pb-2 mb-3">1. Thông tin chung</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="ExportDate" class="form-label fw-bold">Ngày xuất</label>
+                        <input type="date" asp-for="ExportDate" class="form-control border-danger" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ReceiverName" class="form-label fw-bold">Người nhận hàng</label>
+                        <input type="text" asp-for="ReceiverName" class="form-control border-danger" placeholder="Nhập tên người nhận..." required />
+                    </div>
+                </div>
+
+                <h5 class="text-danger fw-bold border-bottom pb-2 mb-3">2. Chi tiết xuất hàng</h5>
+                <div class="table-responsive mb-3">
+                    <table class="table table-bordered table-hover align-middle shadow-sm" id="detailsTable">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th style="width: 40%;">Tên Thiết bị</th>
+                                <th style="width: 20%;">Số lượng</th>
+                                <th style="width: 25%;">Đơn giá xuất (VNĐ)</th>
+                                <th style="width: 15%;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Details.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <select asp-for="Details[i].DeviceId" asp-items="ViewBag.DeviceId" class="form-select" required>
+                                            <option value="">-- Chọn thiết bị --</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="number" asp-for="Details[i].Quantity" value="1" min="1" class="form-control text-center" required />
+                                    </td>
+                                    <td>
+                                        <input type="number" asp-for="Details[i].ExportPrice" value="0" min="0" class="form-control text-end" required />
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" onclick="removeRow(this)" class="btn btn-outline-danger btn-sm shadow-sm">Xóa</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" onclick="addRow()" class="btn btn-outline-success btn-sm fw-bold shadow-sm mb-4">
+                    + Thêm dòng thiết bị
+                </button>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">Quay lại</a>
+                    <button type="submit" class="btn btn-danger px-5 fw-bold shadow-sm">
+                        LƯU PHIẾU XUẤT
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        let rowIndex = @Model.Details.Count;
+
+        function addRow() {
+            let firstSelect = document.querySelector('select[name^="Details[0].DeviceId"]');
+            if (!firstSelect) {
+                alert("Lỗi: Không tìm thấy danh sách thiết bị mẫu!");
+                return;
+            }
+            let deviceOptions = firstSelect.innerHTML;
+            
+            let html = `
+                <tr>
+                    <td>
+                        <select name="Details[${rowIndex}].DeviceId" class="form-select" required>
+                            ${deviceOptions}
+                        </select>
+                    </td>
+                    <td><input type="number" name="Details[${rowIndex}].Quantity" value="1" min="1" class="form-control text-center" required /></td>
+                    <td><input type="number" name="Details[${rowIndex}].ExportPrice" value="0" min="0" class="form-control text-end" required /></td>
+                    <td class="text-center">
+                        <button type="button" onclick="removeRow(this)" class="btn btn-outline-danger btn-sm shadow-sm">Xóa</button>
+                    </td>
+                </tr>
+            `;
+            document.querySelector('#detailsTable tbody').insertAdjacentHTML('beforeend', html);
+            rowIndex++;
+        }
+
+        function removeRow(btn) {
+            let rows = document.querySelectorAll('#detailsTable tbody tr');
+            if (rows.length > 1) {
+                btn.closest('tr').remove();
+            } else {
+                alert("Cảnh báo: Phải có ít nhất một mặt hàng trong phiếu xuất!");
+            }
+        }
+
+        // Bắt sự kiện khi LƯU PHIẾU
+        document.getElementById('exportForm').addEventListener('submit', function(e) {
+            let rows = document.querySelectorAll('#detailsTable tbody tr');
+            let hasError = false;
+
+            if (rows.length === 0) {
+                alert("Lỗi: Phải có ít nhất một mặt hàng mới có thể lưu phiếu!");
+                e.preventDefault();
+                return;
+            }
+
+            rows.forEach(row => {
+                let select = row.querySelector('select');
+                if (select && select.value === "") {
+                    hasError = true;
+                }
+            });
+
+            if (hasError) {
+                alert("Lỗi: Vui lòng chọn thiết bị cho tất cả các dòng!");
+                e.preventDefault();
+            }
+        });
+    </script>
+}

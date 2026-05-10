@@ -5,74 +5,104 @@
 }
 
 <div class="container mt-4">
-    <h2 class="text-primary">Lịch sử Mua hàng</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary fw-bold mb-0">
+            <i class="bi bi-clock-history me-2"></i>LỊCH SỬ MUA HÀNG
+        </h2>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm shadow-sm">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
     <hr />
 
-    <div class="card mb-4">
-        <div class="card-header bg-info text-white">
-            <h4 class="mb-0">Thông tin Khách hàng</h4>
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-info text-white p-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-person-badge-fill me-2"></i>Thông tin Khách hàng</h5>
         </div>
-        <div class="card-body">
-            <p class="mb-1"><strong>Họ và tên:</strong> @Model.CustomerName</p>
-            <p class="mb-0"><strong>Số điện thoại:</strong> @Model.CustomerPhone</p>
+        <div class="card-body bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0"><strong>Họ và tên:</strong> <span class="fs-5 text-dark ms-2">@Model.CustomerName</span></p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0"><strong>Số điện thoại:</strong> <span class="badge bg-dark text-white p-2 ms-2">@Model.CustomerPhone</span></p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <h4 class="mt-4 mb-3">Danh sách Đơn hàng đã đặt</h4>
+    <h4 class="mt-4 mb-3 fw-bold text-dark"><i class="bi bi-cart3 me-2"></i>Danh sách Đơn hàng đã đặt</h4>
 
     @if (Model.Orders != null && Model.Orders.Any())
     {
-        <table class="table table-bordered table-striped table-hover shadow-sm bg-white">
-    <thead class="table-dark text-center">
-        <tr>
-            <th width="15%">Mã Đơn (ID)</th>
-            <th width="20%">Ngày mua</th>
-            <th width="35%">Sản phẩm bao gồm</th>
-            <th width="10%">Số lượng</th> 
-            <th width="20%">Tổng tiền (VNĐ)</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model.Orders)
-        {
-            <tr class="align-middle">
-                <td class="text-center fw-bold text-primary">#@order.OrderId</td>
-                <td class="text-center">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                
-                <td>
-                    <ul class="list-unstyled mb-0">
-                        @foreach (var item in order.OrderItems)
-                        {
-                            <li>• @item.ProductName</li>
-                        }
-                    </ul>
-                </td>
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-bordered align-middle mb-0 bg-white">
+                <thead class="table-dark text-center text-uppercase small">
+                    <tr>
+                        <th width="10%">Mã Đơn</th>
+                        <th width="15%">Ngày mua</th>
+                        <th width="40%">Sản phẩm & Số lượng</th>
+                        <th width="15%">Tổng tiền</th>
+                        <th width="20%">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr>
+                            <td class="text-center fw-bold text-primary">#@order.OrderId</td>
+                            <td class="text-center text-muted small">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            
+                            <td class="px-3">
+                                <ul class="list-unstyled mb-0">
+                                    @foreach (var item in order.OrderItems)
+                                    {
+                                        <li class="py-1">
+                                            <span class="text-dark">@item.ProductName</span>
+                                            <span class="badge bg-light text-muted border ms-1">x@(item.Quantity)</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </td>
 
-                <td class="text-center">
-                    <ul class="list-unstyled mb-0">
-                        @foreach (var item in order.OrderItems)
-                        {
-                            <li class="fw-bold">@item.Quantity</li>
-                        }
-                    </ul>
-                </td>
+                            <td class="text-end fw-bold text-danger px-3">
+                                @order.TotalAmount.ToString("N0") VNĐ
+                            </td>
 
-                <td class="text-danger fw-bold text-end">
-                    @order.TotalAmount.ToString("N0") đ
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                            <td class="text-center p-3">
+                                <a asp-controller="Order" asp-action="Details" asp-route-id="@order.OrderId" 
+                                   class="btn btn-primary btn-sm w-100 shadow-sm mb-2 fw-bold">
+                                    <i class="bi bi-eye-fill me-1"></i> Xem chi tiết
+                                </a>
+
+                                <div class="bg-light rounded p-2 border border-dashed">
+                                    <div class="d-flex flex-wrap justify-content-center gap-1">
+                                        @foreach (var item in order.OrderItems)
+                                        {
+                                            <form asp-controller="Order" asp-action="DeleteOrderDetail" method="post" 
+                                                  onsubmit="return confirm('Xóa @item.ProductName khỏi đơn hàng?');" class="m-0">
+                                                <input type="hidden" name="orderDetailId" value="@item.OrderDetailId" />
+                                                <input type="hidden" name="customerId" value="@Model.CustomerId" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm p-1" 
+                                                        style="width: 32px; height: 32px;" 
+                                                        title="Xóa: @item.ProductName">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
     else
     {
-        <div class="alert alert-warning" role="alert">
-            Khách hàng này hiện tại chưa có đơn hàng nào!
+        <div class="alert alert-warning border-0 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i> Khách hàng này chưa có đơn hàng nào!
         </div>
     }
-
-    <div class="mt-3">
-        <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
-    </div>
 </div>
