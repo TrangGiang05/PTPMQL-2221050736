@@ -1,0 +1,130 @@
+@model FirstWebMVC.Models.Entities.Book
+
+<div class="modal fade" id="editBookModal" tabindex="-1" aria-labelledby="editBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBookModalLabel">
+                    Edit Book
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <!-- Form -->
+            <form id="editBookForm">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- ISBN -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                ISBN
+                            </label>
+                            <input asp-for="ISBN" class="form-control" placeholder="Enter ISBN" />
+                            <span asp-validation-for="ISBN" class="text-danger">
+                            </span>
+                        </div>
+                        <!-- Title -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Title
+                            </label>
+                            <input asp-for="Title" class="form-control" placeholder="Enter title" />
+                            <span asp-validation-for="Title" class="text-danger">
+                            </span>
+                        </div>
+                        <!-- Author -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Author
+                            </label>
+                            <input asp-for="Author" class="form-control" placeholder="Enter author" />
+                            <span asp-validation-for="Author" class="text-danger">
+                            </span>
+                        </div>
+                        <!-- Publisher -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Publisher
+                            </label>
+                            <input asp-for="Publisher" class="form-control" placeholder="Enter publisher" />
+                            <span asp-validation-for="Publisher" class="text-danger">
+                            </span>
+                        </div>
+                        <!-- Publish Year -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Publish Year
+                            </label>
+                            <input asp-for="PublishYear" type="number" class="form-control" />
+                            <span asp-validation-for="PublishYear" class="text-danger">
+                            </span>
+                        </div>
+                        <!-- Price -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Price
+                            </label>
+                            <input asp-for="Price" type="number" step="0.01" class="form-control" />
+                            <span asp-validation-for="Price" class="text-danger">
+                            </span>
+                        </div>
+                        <!-- Quantity -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">
+                                Quantity
+                            </label>
+                            <input asp-for="Quantity" type="number" class="form-control" />
+                            <span asp-validation-for="Quantity" class="text-danger">
+                            </span>
+                        </div>
+                        <!-- Category -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Category
+                            </label>
+                            <input asp-for="Category" class="form-control" placeholder="Enter category" />
+                            <span asp-validation-for="Category" class="text-danger">
+                            </span>
+                        </div>
+                        <!-- Status -->
+                        <div class="col-md-6 mb-3 d-flex align-items-center">
+                            <div class="form-check mt-4">
+                                <input asp-for="IsAvailable" class="form-check-input" />
+                                <label class="form-check-label">
+                                    Available
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Description -->
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">
+                                Description
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4"
+                                          placeholder="Enter description">
+                            </textarea>
+                                <span asp-validation-for="Description" class="text-danger">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Update Book
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

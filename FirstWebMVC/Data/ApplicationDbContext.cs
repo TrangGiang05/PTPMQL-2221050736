@@ -24,5 +24,6 @@ namespace FirstWebMVC.Data
         public DbSet<ImportSlipDetail> ImportSlipDetails { get; set; }
         public DbSet<ExportSlip> ExportSlips { get; set; }
         public DbSet<ExportSlipDetail> ExportSlipDetails { get; set; }
+        public DbSet<Book> Books { get; set; }
     }
 }

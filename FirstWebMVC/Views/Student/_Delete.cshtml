@@ -1,0 +1,53 @@
+@model FirstWebMVC.Models.Entities.Student
+
+<div class="modal fade" id="deleteStudentModal" tabindex="-1" aria-labelledby="deleteStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="deleteStudentModalLabel">
+                    Xóa Sinh Viên
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            
+            <form id="deleteStudentForm" asp-action="Delete" asp-controller="Student" method="post">
+                @Html.AntiForgeryToken()
+                
+                <input type="hidden" asp-for="StudentCode" />
+                
+                <div class="modal-body">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <strong>Cảnh báo!</strong> Bạn có chắc chắn muốn xóa sinh viên này không? Hành động này không thể hoàn tác.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">
+                                Mã Sinh Viên
+                            </label>
+                            <input asp-for="StudentCode" class="form-control bg-light" disabled />
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">
+                                Họ và Tên
+                            </label>
+                            <input asp-for="FullName" class="form-control bg-light" disabled />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Hủy bỏ
+                    </button>
+                    <button type="submit" class="btn btn-danger fw-bold">
+                        Xác nhận Xóa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

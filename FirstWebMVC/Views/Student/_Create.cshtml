@@ -1,0 +1,75 @@
+@model FirstWebMVC.Models.Entities.Student
+
+<div class="modal fade" id="createStudentModal" tabindex="-1" aria-labelledby="createStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="createStudentModalLabel">
+                    Thêm Mới Sinh Viên
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            
+            <form id="createStudentForm">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="text-danger mb-3" asp-validation-summary="ModelOnly"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">
+                                Mã Sinh Viên <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="StudentCode" class="form-control" placeholder="Ví dụ: SV001" />
+                            <span asp-validation-for="StudentCode" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">
+                                Họ và Tên <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">
+                                Tuổi <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Age" type="number" class="form-control" placeholder="Nhập tuổi" />
+                            <span asp-validation-for="Age" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">
+                                Khoa
+                            </label>
+                            <select asp-for="FacultyID" class="form-select" asp-items="@ViewBag.FacultyList">
+                                <option value="">-- Chọn Khoa --</option>
+                            </select>
+                            <span asp-validation-for="FacultyID" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">
+                                Email <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="Ví dụ: email@gmail.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Hủy bỏ
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Lưu Sinh Viên
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

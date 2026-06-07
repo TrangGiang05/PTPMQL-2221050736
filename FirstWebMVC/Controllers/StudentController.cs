@@ -23,20 +23,43 @@ namespace FirstWebMVC.Controllers
             _context = context;
         }
 
-        // --- YÊU CẦU 2: HIỂN THỊ DỮ LIỆU ---
-        public async Task<IActionResult> Index()
+        // --- BƯỚC 1: SỬA LẠI INDEX CHO AJAX ---
+        public IActionResult Index()
         {
-            var danhSachSinhVien = await _context.Students
-                .Include(s => s.Faculty) // Kéo theo dữ liệu từ bảng Faculty
-                .Select(s => new StudentFacultyViewModel // Nhặt dữ liệu đưa vào ViewModel
+            // Trả về view rỗng, dữ liệu sẽ được load ngầm qua hàm GetStudents bên dưới
+            return View();
+        }
+
+        // --- BƯỚC 2: HÀM CUNG CẤP DỮ LIỆU CHO AJAX (READ) ---
+        public async Task<IActionResult> GetStudents(int page = 1, int pageSize = 10)
+        {
+            // Dùng lại logic lấy StudentFacultyViewModel rất chuẩn của bạn
+            var query = _context.Students
+                .Include(s => s.Faculty) 
+                .AsNoTracking()
+                .Select(s => new StudentFacultyViewModel 
                 {
                     StudentCode = s.StudentCode,
                     FullName = s.FullName,
                     FacultyName = s.Faculty != null ? s.Faculty.FacultyName : "Chưa có khoa"
-                })
-                .ToListAsync(); 
+                });
 
-            return View(danhSachSinhVien);
+            var totalItems = await query.CountAsync();
+
+            var students = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var result = new FirstWebMVC.ViewModels.PagedResult<StudentFacultyViewModel> 
+            {
+                Items = students,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalItems = totalItems
+            };
+
+            return PartialView("_StudentTable", result);
         }
 
         // --- XEM CHI TIẾT SINH VIÊN (DETAILS) ---
@@ -60,13 +83,14 @@ namespace FirstWebMVC.Controllers
             return View(student);
         }
 
-        // --- YÊU CẦU 3: THÊM MỚI DỮ LIỆU (CREATE) ---
+        // --- THÊM MỚI DỮ LIỆU (CREATE) CHO AJAX ---
         [HttpGet]
         public IActionResult Create()
         {
             var danhSachKhoa = _context.Faculties.ToList();
             ViewBag.FacultyList = new SelectList(danhSachKhoa, "FacultyID", "FacultyName");
-            return View();
+            // ĐÃ SỬA: Trả về PartialView để nhúng vào Modal
+            return PartialView("_Create", new Student());
         }
         
         [HttpPost]
@@ -77,57 +101,48 @@ namespace FirstWebMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                // Kiểm tra xem mã sinh viên có tồn tại chưa
                 var existingStudent = await _context.Students.FirstOrDefaultAsync(s => s.StudentCode == student.StudentCode);
                 if (existingStudent != null)
                 {
                     ModelState.AddModelError("StudentCode", "Mã sinh viên này đã tồn tại trong hệ thống!");
                     ViewBag.FacultyList = new SelectList(_context.Faculties.ToList(), "FacultyID", "FacultyName", student.FacultyID);
-                    return View(student);
+                    // ĐÃ SỬA: Báo lỗi thẳng trên PartialView
+                    return PartialView("_Create", student);
                 }
 
-                _context.Add(student); //cau lenh nay use entities framwork de quan ly trang thai cua du lieu
-                await _context.SaveChangesAsync(); // luu thay doi vao trong csdl
-                return RedirectToAction(nameof(Index));
+                _context.Add(student); 
+                await _context.SaveChangesAsync(); 
+                // ĐÃ SỬA: Trả về cục Json báo thành công để Javascript đóng Modal
+                return Json(new { success = true });
             }
             
             ViewBag.FacultyList = new SelectList(_context.Faculties.ToList(), "FacultyID", "FacultyName", student.FacultyID);
-            return View(student);
+            // ĐÃ SỬA: Báo lỗi validation thẳng trên PartialView
+            return PartialView("_Create", student);
         }
 
-        // 1. Action GET: Lấy dữ liệu cũ và danh sách khoa lên Form
+        // --- SỬA DỮ LIỆU (EDIT) CHO AJAX ---
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
-            {
-                return NotFound("NotFound");
-            }
+            if (id == null) return NotFound("NotFound");
 
             var student = await _context.Students.FindAsync(id);
-            if (student == null)
-            {
-                return NotFound("NotFound");
-            }
+            if (student == null) return NotFound("NotFound");
             
-            // Lấy danh sách khoa và chọn sẵn khoa hiện tại của sinh viên
             var danhSachKhoa = _context.Faculties.ToList();
             ViewBag.FacultyList = new SelectList(danhSachKhoa, "FacultyID", "FacultyName", student.FacultyID);
 
-            return View(student);
+            // ĐÃ SỬA: Trả về PartialView thay vì View
+            return PartialView("_Edit", student);
         }
 
-        // 2. Action POST: Lưu thông tin thay đổi vào CSDL
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, Student student)
+        public async Task<IActionResult> Edit(Student student)
         {
-            if (id != student.StudentCode)
-            {
-                return NotFound("NotFound");
-            }
+            if (student?.StudentCode == null) return Json(new { success = false, message = "Mã sinh viên không hợp lệ" });
 
-            // Gỡ bỏ kiểm tra ràng buộc thuộc tính Faculty ngầm
             ModelState.Remove("Faculty");
 
             if (ModelState.IsValid)
@@ -136,74 +151,63 @@ namespace FirstWebMVC.Controllers
                 {
                     _context.Update(student);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return Json(new { success = true });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    // Lỗi này xảy ra khi dữ liệu bị thay đổi bởi người dùng khác
-                    var studentExists = await _context.Students.AnyAsync(s => s.StudentCode == student.StudentCode);
-                    if (!studentExists)
-                    {
-                        return NotFound("Sinh viên này đã bị xóa bởi người dùng khác!");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Dữ liệu đã được thay đổi bởi người dùng khác. Vui lòng tải lại trang!");
-                    }
-                }
-                catch (DbUpdateException ex)
-                {
-                    // Lỗi từ Database (ví dụ: Vi phạm constraint)
-                    ModelState.AddModelError("", "Lỗi khi lưu dữ liệu: " + ex.InnerException?.Message);
+                    return Json(new { success = false, message = "Dữ liệu đã bị thay đổi, vui lòng thử lại." });
                 }
                 catch (Exception ex)
                 {
-                    // Lỗi không mong đợi
-                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                    return Json(new { success = false, message = "Có lỗi xảy ra: " + ex.Message });
                 }
             }
             
-            // Nếu có lỗi, nạp lại danh sách khoa để hiển thị lại Form
-            ViewBag.FacultyList = new SelectList(_context.Faculties.ToList(), "FacultyID", "FacultyName", student.FacultyID);
-            return View(student);
+            var errors = string.Join("; ", ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage));
+            return Json(new { success = false, message = "Validation failed: " + errors });
         }
 
-        // --- YÊU CẦU 5: XÓA DỮ LIỆU (DELETE) ---
+        // --- XÓA DỮ LIỆU (DELETE) CHO AJAX ---
         [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null)
-            {
-                return NotFound("NotFound");
-            }
+            if (id == null) return NotFound("NotFound");
 
             var student = await _context.Students.FindAsync(id);
-            if (student == null)
-            {
-                return NotFound("NotFound");
-            }
+            if (student == null) return NotFound("NotFound");
 
-            return View(student); 
+            // ĐÃ SỬA: Trả về PartialView thay vì View
+            return PartialView("_Delete", student); 
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> Delete(Student student)
         {
-            var student = await _context.Students.FindAsync(id);
-            if (student != null)
+            if (student?.StudentCode == null) return NotFound("NotFound");
+
+            try
             {
-                _context.Students.Remove(student); 
-                await _context.SaveChangesAsync(); 
+                var studentToDelete = await _context.Students.FindAsync(student.StudentCode);
+                if (studentToDelete != null)
+                {
+                    _context.Students.Remove(studentToDelete); 
+                    await _context.SaveChangesAsync();
+                    // ĐÃ SỬA: Thành công thì trả về JSON
+                    return Json(new { success = true });
+                }
+                return Json(new { success = false, message = "Sinh viên không tồn tại" });
             }
-            return RedirectToAction(nameof(Index)); 
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Có lỗi xảy ra: " + ex.Message });
+            }
         }
 
         // --- ĐỌC DỮ LIỆU TỪ EXCEL VÀ LƯU VÀO CSDL ---
         [HttpPost]
         public async Task<IActionResult> ImportExcel(IFormFile fileExcel)
         {
-            // 1. Kiểm tra xem người dùng có chọn file chưa
             if (fileExcel == null || fileExcel.Length == 0)
             {
                 TempData["Error"] = "Vui lòng chọn một file Excel!";
@@ -216,24 +220,20 @@ namespace FirstWebMVC.Controllers
 
             try
             {
-                // 2. Mở file Excel ra đọc
                 using (var stream = new MemoryStream())
                 {
                     await fileExcel.CopyToAsync(stream);
                     using (var workbook = new XLWorkbook(stream))
                     {
-                        // Lấy Sheet đầu tiên
                         var worksheet = workbook.Worksheet(1);
                         var rows = worksheet.RangeUsed().RowsUsed();
 
-                        // 3. Đọc từ dòng 2 (Skip dòng 1 vì là dòng Tiêu đề)
                         foreach (var row in rows.Skip(1))
                         {
                             try
                             {
                                 var studentCode = row.Cell(1).Value.ToString().Trim();
 
-                                // Kiểm tra xem mã sinh viên đã tồn tại chưa
                                 var existingStudent = await _context.Students.FirstOrDefaultAsync(s => s.StudentCode == studentCode);
                                 if (existingStudent != null)
                                 {
@@ -244,7 +244,6 @@ namespace FirstWebMVC.Controllers
 
                                 var newStudent = new Student
                                 {
-                                    // Đối chiếu đúng 5 cột trong file Template Excel
                                     StudentCode = studentCode,
                                     FullName = row.Cell(2).Value.ToString().Trim(),
                                     Age = int.Parse(row.Cell(3).Value.ToString().Trim()),
@@ -262,19 +261,14 @@ namespace FirstWebMVC.Controllers
                     }
                 }
 
-                // 4. Lưu toàn bộ vào Database
                 if (studentsList.Any())
                 {
                     _context.Students.AddRange(studentsList);
                     await _context.SaveChangesAsync();
                 }
 
-                // Tạo thông báo
                 string message = $"Import thành công {studentsList.Count} sinh viên!";
-                if (duplicateCount > 0)
-                {
-                    message += $" (Bỏ qua {duplicateCount} mã trùng lặp)";
-                }
+                if (duplicateCount > 0) message += $" (Bỏ qua {duplicateCount} mã trùng lặp)";
                 if (errorRows.Any())
                 {
                     message += $" - Lỗi: {string.Join("; ", errorRows.Take(3))}";
@@ -290,6 +284,5 @@ namespace FirstWebMVC.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
     }
 }

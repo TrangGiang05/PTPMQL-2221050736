@@ -17,13 +17,12 @@ namespace FirstWebMVC.Models.Entities
         public string FullName { get; set; }
 
         // Bổ sung thuộc tính Tuổi để dùng Range
-        [Required(ErrorMessage = "Vui lòng nhập tuổi!")]
         [Range(18, 200, ErrorMessage = "Yêu cầu trên 18 tuổi!")]
         public int Age { get; set; }
 
         // Bổ sung thuộc tính Email để dùng EmailAddress
-        [Required(ErrorMessage = "Vui lòng nhập Email!")]
         [EmailAddress(ErrorMessage = "Email không đúng định dạng (VD: ten@gmail.com)!")]
+        [Required(ErrorMessage = "Email không được để trống!")]
         public string Email { get; set; }
 
         public string FacultyID { get; set; } // Cột Khóa ngoại (cùng kiểu string với bảng Faculty)

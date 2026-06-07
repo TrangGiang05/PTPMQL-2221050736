@@ -1,59 +1,35 @@
-@model IEnumerable<FirstWebMVC.Models.ViewModels.StudentFacultyViewModel>
-
 @{
     ViewData["Title"] = "Danh sách Sinh viên";
 }
 
-<div class="mt-4 mb-4">
-    <h2>Danh sách Sinh viên</h2>
-    <a asp-action="Create" class="btn btn-primary mt-2">Thêm mới Sinh viên</a>
-</div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Danh sách Sinh viên</h2>
 
-<div class="card shadow-sm mb-4 border-0" style="background-color: #f4f7f6; border-radius: 10px;">
-    <div class="card-body p-4 border border-light rounded-3">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0 fw-bold text-success">
-                 Import Danh sách Sinh viên từ Excel
-            </h5>
-            <span class="badge bg-secondary">Chọn file.xlsx</span>
+        <div class="bg-light border rounded p-2" style="min-width: 350px;">
+            <form asp-action="ImportExcel" asp-controller="Student" method="post" enctype="multipart/form-data" class="m-0">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-success text-white fw-bold">Import Excel</span>
+                    <input type="file" class="form-control" name="fileExcel" accept=".xlsx, .xls" required>
+                    <button class="btn btn-success" type="submit">Upload</button>
+                </div>
+                <div class="text-muted mt-1 text-end" style="font-size: 0.8rem; font-style: italic;">
+                    * Vui lòng đảm bảo các cột dữ liệu khớp với file mẫu.
+                </div>
+            </form>
         </div>
+    </div>
 
-        <form asp-controller="Student" asp-action="ImportExcel" method="post" enctype="multipart/form-data">
-            <div class="input-group input-group-lg mb-2 shadow-sm">
-                <input type="file" name="fileExcel" class="form-control" accept=".xlsx" required />
-                <button type="submit" class="btn btn-success fw-bold px-4">
-                     Upload
-                </button>
-            </div>
-            <div class="form-text">
-                <i class="text-danger">*</i> Vui lòng đảm bảo các cột dữ liệu khớp với file mẫu.
-            </div>
-        </form>
+    <div id="studentTableContainer">
     </div>
 </div>
 
-<table class="table table-bordered table-hover shadow-sm">
-    <thead class="table-primary text-center">
-        <tr>
-            <th>Mã Sinh Viên</th>
-            <th>Họ và Tên</th>
-            <th>Tên Khoa</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td class="align-middle text-center fw-bold text-primary">@item.StudentCode</td>
-                <td class="align-middle">@item.FullName</td>
-                <td class="align-middle">@item.FacultyName</td>
-                <td class="text-center align-middle">
-                    <a asp-action="Details" asp-route-id="@item.StudentCode" class="btn btn-sm btn-outline-info me-1">Xem</a>
-                    <a asp-action="Edit" asp-route-id="@item.StudentCode" class="btn btn-sm btn-outline-primary me-1">Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@item.StudentCode" class="btn btn-sm btn-outline-danger">Xóa</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div id="modalContainer"></div>
+
+@section Scripts {
+    <script src="~/js/student/student.js" asp-append-version="true"></script>
+    <script src="~/js/student/student-table.js" asp-append-version="true"></script>
+    <script src="~/js/student/student-create.js" asp-append-version="true"></script>
+    <script src="~/js/student/student-edit.js" asp-append-version="true"></script>
+    <script src="~/js/student/student-delete.js" asp-append-version="true"></script>
+}
