@@ -11,10 +11,52 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
-        /* Hiệu ứng hover cho menu thêm mượt */
-        .dropdown-item { transition: all 0.2s; border-radius: 5px; }
-        .dropdown-item:hover { transform: translateX(5px); background-color: #f8f9fa; color: #0d6efd !important; }
-        .dropdown-menu { animation: fadeIn 0.3s ease-out; border: none !important; }
+        .system-toggle {
+            background: linear-gradient(135deg, #1d4ed8 0%, #0f172a 100%);
+            color: #fff !important;
+            border: 0;
+            border-radius: 999px;
+            padding: 0.7rem 1.1rem;
+            box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .system-toggle:hover,
+        .system-toggle:focus {
+            color: #fff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.22);
+        }
+
+        .system-menu {
+            min-width: 280px;
+            border: 0;
+            border-radius: 1rem;
+            padding: 0.75rem;
+            box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.18);
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .dropdown-header {
+            letter-spacing: 0.04em;
+        }
+
+        .dropdown-item {
+            border-radius: 0.8rem;
+            transition: all 0.2s ease;
+            padding: 0.7rem 0.85rem;
+        }
+
+        .dropdown-item:hover {
+            transform: translateX(4px);
+            background-color: #eff6ff;
+            color: #1d4ed8 !important;
+        }
+
+        .dropdown-divider {
+            opacity: 0.15;
+        }
+
         @@keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -50,29 +92,29 @@
 
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle btn btn-outline-primary border-2 px-3 fw-bold shadow-sm" 
+                            <a class="nav-link dropdown-toggle system-toggle fw-semibold" 
                                href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-grid-fill me-1"></i> HỆ THỐNG
+                                <i class="bi bi-grid-fill me-2"></i> Hệ thống
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-lg py-3 mt-2" style="min-width: 250px;">
+                            <ul class="dropdown-menu dropdown-menu-end system-menu mt-2">
                                 
-                                <li><h6 class="dropdown-header text-uppercase fw-bolder text-primary">Đơn hàng</h6></li>
-                                <li><a class="dropdown-item" asp-controller="Customer" asp-action="Index"><i class="bi bi-people me-2"></i>Khách hàng</a></li>
-                                <li><a class="dropdown-item" asp-controller="Product" asp-action="Index"><i class="bi bi-box-seam me-2"></i>Sản phẩm</a></li>
-                                
-                                <li><hr class="dropdown-divider mx-3"></li>
-
-                                <li><h6 class="dropdown-header text-uppercase fw-bolder text-success">Quản lý kho</h6></li>
-                                <li><a class="dropdown-item" asp-controller="Supplier" asp-action="Index"><i class="bi bi-truck me-2"></i>Nhà cung cấp</a></li>
-                                <li><a class="dropdown-item" asp-controller="Category" asp-action="Index"><i class="bi bi-tags me-2"></i>Loại thiết bị</a></li>
-                                <li><a class="dropdown-item" asp-controller="Device" asp-action="Index"><i class="bi bi-laptop me-2"></i>Thiết bị</a></li>
+                                <li><h6 class="dropdown-header text-uppercase fw-bolder text-primary mb-2">Bán hàng</h6></li>
+                                <li><a class="dropdown-item" asp-controller="Customer" asp-action="Index"><i class="bi bi-people me-2 text-primary"></i>Khách hàng</a></li>
+                                <li><a class="dropdown-item" asp-controller="Product" asp-action="Index"><i class="bi bi-box-seam me-2 text-primary"></i>Sản phẩm</a></li>
                                 
                                 <li><hr class="dropdown-divider mx-3"></li>
 
-                                <li><a class="dropdown-item text-primary fw-bold" asp-controller="ImportSlip" asp-action="Index">
+                                <li><h6 class="dropdown-header text-uppercase fw-bolder text-success mb-2">Quản lý kho</h6></li>
+                                <li><a class="dropdown-item" asp-controller="Supplier" asp-action="Index"><i class="bi bi-truck me-2 text-success"></i>Nhà cung cấp</a></li>
+                                <li><a class="dropdown-item" asp-controller="Category" asp-action="Index"><i class="bi bi-tags me-2 text-success"></i>Loại thiết bị</a></li>
+                                <li><a class="dropdown-item" asp-controller="Device" asp-action="Index"><i class="bi bi-laptop me-2 text-success"></i>Thiết bị</a></li>
+                                
+                                <li><hr class="dropdown-divider mx-3"></li>
+
+                                <li><a class="dropdown-item fw-semibold text-primary" asp-controller="ImportSlip" asp-action="Index">
                                     <i class="bi bi-arrow-down-square-fill me-2"></i>Phiếu Nhập Kho
                                 </a></li>
-                                <li><a class="dropdown-item text-danger fw-bold" asp-controller="ExportSlip" asp-action="Index">
+                                <li><a class="dropdown-item fw-semibold text-danger" asp-controller="ExportSlip" asp-action="Index">
                                     <i class="bi bi-arrow-up-square-fill me-2"></i>Phiếu Xuất Kho
                                 </a></li>
                             </ul>

@@ -1,8 +1,191 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .home-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 55%, #38bdf8 100%);
+        color: #fff;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.18);
+    }
+
+    .home-hero::after {
+        content: "";
+        position: absolute;
+        inset: auto -4rem -4rem auto;
+        width: 14rem;
+        height: 14rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .stat-card {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.14);
+    }
+
+    .feature-tile {
+        border-radius: 1rem;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        background: #fff;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .feature-tile:hover {
+        transform: translateY(-3px);
+        border-color: rgba(37, 99, 235, 0.35);
+    }
+
+    .icon-badge {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<div class="home-hero p-4 p-md-5 mb-4">
+    <div class="row align-items-center position-relative" style="z-index: 1;">
+        <div class="col-lg-12">
+            <span class="badge bg-light text-primary mb-3 px-3 py-2">Hệ thống quản lý MVC</span>
+            <h1 class="display-5 fw-bold mb-3">Chào mừng bạn đến với khu điều hành của hệ thống</h1>
+            <p class="lead mb-4 text-white-75">
+            Trang tổng quan cho quản lý sinh viên, khách hàng, sản phẩm và các phiếu nhập - xuất.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-controller="Student" asp-action="Index" class="btn btn-light btn-lg px-4">
+                    <i class="bi bi-mortarboard-fill me-2"></i>Quản lý sinh viên
+                </a>
+                <a asp-controller="Customer" asp-action="Index" class="btn btn-outline-light btn-lg px-4">
+                    <i class="bi bi-people-fill me-2"></i>Quản lý khách hàng
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="icon-badge bg-primary-subtle text-primary">
+                        <i class="bi bi-mortarboard-fill fs-4"></i>
+                    </div>
+                    <span class="badge text-bg-primary-subtle text-primary">Module</span>
+                </div>
+                <h5 class="card-title fw-bold mb-1">Sinh viên</h5>
+                <p class="card-text text-muted mb-3">CRUD, lọc dữ liệu và import Excel.</p>
+                <a asp-controller="Student" asp-action="Index" class="stretched-link text-decoration-none fw-semibold">Mở màn hình</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="icon-badge bg-success-subtle text-success">
+                        <i class="bi bi-people-fill fs-4"></i>
+                    </div>
+                    <span class="badge text-bg-success-subtle text-success">Module</span>
+                </div>
+                <h5 class="card-title fw-bold mb-1">Khách hàng</h5>
+                <p class="card-text text-muted mb-3">Quản lý thông tin và lịch sử liên quan.</p>
+                <a asp-controller="Customer" asp-action="Index" class="stretched-link text-decoration-none fw-semibold">Mở màn hình</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="icon-badge bg-warning-subtle text-warning">
+                        <i class="bi bi-box-seam fs-4"></i>
+                    </div>
+                    <span class="badge text-bg-warning-subtle text-warning">Module</span>
+                </div>
+                <h5 class="card-title fw-bold mb-1">Sản phẩm</h5>
+                <p class="card-text text-muted mb-3">Danh mục hàng hóa và thông tin tồn kho.</p>
+                <a asp-controller="Product" asp-action="Index" class="stretched-link text-decoration-none fw-semibold">Mở màn hình</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="card stat-card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="icon-badge bg-danger-subtle text-danger">
+                        <i class="bi bi-arrow-left-right fs-4"></i>
+                    </div>
+                    <span class="badge text-bg-danger-subtle text-danger">Module</span>
+                </div>
+                <h5 class="card-title fw-bold mb-1">Nhập - xuất</h5>
+                <p class="card-text text-muted mb-3">Theo dõi luồng hàng hóa trong kho.</p>
+                <a asp-controller="ImportSlip" asp-action="Index" class="stretched-link text-decoration-none fw-semibold">Mở màn hình</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4 p-md-5">
+                <h2 class="h4 fw-bold mb-3">Lối tắt nhanh</h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a asp-controller="Supplier" asp-action="Index" class="feature-tile d-flex align-items-center gap-3 p-3 text-decoration-none text-dark">
+                            <span class="icon-badge bg-info-subtle text-info"><i class="bi bi-truck fs-4"></i></span>
+                            <div>
+                                <div class="fw-semibold">Nhà cung cấp</div>
+                                <small class="text-muted">Quản lý đối tác cung ứng</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a asp-controller="Category" asp-action="Index" class="feature-tile d-flex align-items-center gap-3 p-3 text-decoration-none text-dark">
+                            <span class="icon-badge bg-success-subtle text-success"><i class="bi bi-tags fs-4"></i></span>
+                            <div>
+                                <div class="fw-semibold">Loại thiết bị</div>
+                                <small class="text-muted">Phân nhóm danh mục thiết bị</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a asp-controller="Device" asp-action="Index" class="feature-tile d-flex align-items-center gap-3 p-3 text-decoration-none text-dark">
+                            <span class="icon-badge bg-primary-subtle text-primary"><i class="bi bi-laptop fs-4"></i></span>
+                            <div>
+                                <div class="fw-semibold">Thiết bị</div>
+                                <small class="text-muted">Thông tin thiết bị trong kho</small>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a asp-controller="ExportSlip" asp-action="Index" class="feature-tile d-flex align-items-center gap-3 p-3 text-decoration-none text-dark">
+                            <span class="icon-badge bg-danger-subtle text-danger"><i class="bi bi-arrow-up-square-fill fs-4"></i></span>
+                            <div>
+                                <div class="fw-semibold">Phiếu xuất kho</div>
+                                <small class="text-muted">Ghi nhận hàng xuất ra ngoài</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
